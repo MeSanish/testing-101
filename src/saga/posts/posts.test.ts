@@ -11,7 +11,10 @@ afterEach(() => {
 
 test('fetchPostsEffect', async () => {
   const dispatched: any[] = [];
-  const expectedResponse: {}[] = [];
+  const expectedResponse: {}[] = [{
+    id: '1',
+    value: 'sanish'
+  }];
 
   const fetchPostsAPI = sinon.stub(api, 'fetchPostsAPI').callsFake(() => {
     return new Promise((resolve, reject) => {
@@ -20,7 +23,7 @@ test('fetchPostsEffect', async () => {
   });
   const callableAction = fetchPostsAction({ search: 'test', filter: { country: '1', type: '1' } });
 
-  const result = await runSaga({
+  const result = await runSaga<any, any, any>({
     dispatch: (action) => dispatched.push(action),
     getState: () => ({ test: { a: '1' } }),
   }, fetchPostsEffect, callableAction).toPromise();
@@ -32,7 +35,11 @@ test('fetchPostsEffect', async () => {
 test('fetchPostsAPI', async () => {
   const getPosts = sinon.stub(axios, 'get').callsFake((url) => {
     return new Promise((resolve, reject) => {
-      resolve({ data: []})
+      const data: {}[] = [{
+        id: '1',
+        value: 'sanish'
+      }];
+      resolve({ data})
     })
   });
   const params = { search: 'test', filter: { country: '1', type: '1' } };
