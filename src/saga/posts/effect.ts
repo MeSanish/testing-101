@@ -6,7 +6,7 @@ import { fillPostAction } from "src/actionCreators/posts";
 export function* fetchPostsEffect(action: IFetchPostsAction) {
   try {
     yield select((reduxState) => reduxState.test.a);
-    const data: Array<{}> = yield call(fetchPostsAPI);
+    const data: Array<{}> = yield call(fetchPostsAPI, action.payload);
     yield put(fillPostAction(data))
     if (action.resolve) {
       action.resolve(data);

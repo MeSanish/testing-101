@@ -3,6 +3,11 @@ import * as api from './api';
 import sinon from 'sinon';
 import { runSaga } from 'redux-saga';
 import { fetchPostsAction, fillPostAction } from 'src/actionCreators/posts';
+import axios from "src/utils/axios";
+
+afterEach(() => {
+  sinon.restore();
+})
 
 test('fetchPostsEffect', async () => {
   const dispatched: any[] = [];
@@ -19,7 +24,18 @@ test('fetchPostsEffect', async () => {
     dispatch: (action) => dispatched.push(action),
     getState: () => ({ test: { a: '1' } }),
   }, fetchPostsEffect, callableAction).toPromise();
-  expect(fetchPostsAPI.calledOnce)
+  expect(fetchPostsAPI.calledOnce).toBe(true);
   expect(result).toBe(expectedResponse);
   expect(dispatched).toStrictEqual([fillPostAction(expectedResponse)])
 });
+
+test('fetchPostsAPI', async () => {
+  const getPosts = sinon.stub(axios, 'get').callsFake((url) => {
+    return new Promise((resolve, reject) => {
+      resolve({ data: []})
+    })
+  });
+  const params = { search: 'test', filter: { country: '1', type: '1' } };
+  await api.fetchPostsAPI(params);
+  expect(getPosts.calledWith('/v1/posts', { params })).toBe(true);
+})
